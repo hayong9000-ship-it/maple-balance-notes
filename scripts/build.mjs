@@ -1,0 +1,15 @@
+import { cpSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import vm from 'node:vm';
+const project=resolve(import.meta.dirname,'..');
+mkdirSync(resolve(project,'dist'),{recursive:true});
+cpSync(resolve(project,'src'),resolve(project,'dist'),{recursive:true});
+const context={window:{}};
+vm.runInNewContext(readFileSync(resolve(project,'src/data.js'),'utf8'),context);
+const {meta}=context.window.PATCH_DATA;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let html=readFileSync(resolve(project,'src/index.html'),'utf8');
+html=html.replace(/<title>.*?<\/title>/,`<title>${esc(meta.title)} · ${esc(meta.shortDate)} 테스트월드</title>`);
+html=html.replace(/<meta name="description" content="[^"]*">/,`<meta name="description" content="${esc(meta.dateLabel)} 메이플스토리 테스트월드 ${esc(meta.patch)} 전 직업 밸런스 패치. 변경 전후 수치, 스킬 설명, 툴팁 비교.">`);
+writeFileSync(resolve(project,'dist/index.html'),html);
+console.log(`Built ${meta.title} / ${meta.patch}`);
