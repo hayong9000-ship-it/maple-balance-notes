@@ -29,8 +29,7 @@ function home(selected='all') {
   main.innerHTML = `<section class="intro"><div><p class="eyebrow">${esc(D.meta.dateLabel)} · TEST WORLD</p><h1>스킬 변경 사항</h1><p class="lede">직업을 고르고, 스킬의 변경 전·후를 비교하세요.</p></div><div class="patch-stamp"><b>${esc(D.meta.patch)}</b><span>${D.jobs.length-1}개 직업 · ${D.groups.length}개 직업군</span></div></section>
     <a class="common-link" href="#job/common"><span><strong>전 직업 공통 변경</strong><small>${esc(D.meta.commonSummary.replace('전 직업 공통 · ',''))}</small></span><span class="arrow" aria-hidden="true">→</span></a>
     <nav class="group-tabs" aria-label="직업군"><a href="#" class="${selected==='all'?'active':''}" ${selected==='all'?'aria-current="page"':''}>전체 직업</a>${D.groups.map(g=>`<a href="#group/${g.id}" class="${selected===g.id?'active':''}" ${selected===g.id?'aria-current="page"':''}>${esc(g.name)}</a>`).join('')}</nav>
-    <div id="job-directory">${groups.map(groupSection).join('')}</div>
-    ${(D.meta.corrections||[]).length ? `<section class="revisions"><h2 class="section-label">공지 수정 반영<span>${esc(D.meta.revisionLabel)}</span></h2><div class="revision-grid">${D.meta.corrections.map(({job:id,skill,summary})=>{const j=byId(id),k=allSkills(j).find(s=>s.name===skill);return `<a class="revision" href="${href(id,k?.id)}"><img src="${j.portrait}" alt="" width="36" height="36"><span><b>${esc(j.name)} · ${esc(skill)}</b><small>${esc(summary)}</small></span></a>`;}).join('')}</div></section>`:''}`;
+    <div id="job-directory">${groups.map(groupSection).join('')}</div>`;
   document.title = `${selected==='all'?'전 직업':groupName(selected)} · ${D.meta.title}`;
 }
 function comparisonTable(k) {
@@ -62,7 +61,7 @@ function detail(id,anchor) {
   if(!j){main.innerHTML='<div class="empty"><h1>직업을 찾을 수 없습니다.</h1><a href="#">전체 직업으로 돌아가기 →</a></div>';return;}
   activeJob=j;
   main.className='shell detail-page';
-  main.innerHTML=`<section class="job-intro"><a class="back" href="${j.group==='common'?'#':'#group/'+j.group}">← ${j.group==='common'?'전체 직업':groupName(j.group)}</a><div class="job-title">${j.portrait?`<img src="${j.portrait}" alt="" width="76" height="76">`:''}<div><p class="eyebrow">${esc(groupName(j.group))}</p><h1>${esc(j.name)}</h1><p class="detail-meta">${j.count}개 변경 항목 · ${esc(D.meta.shortDate)} 테스트월드</p></div><div class="detail-version"><b>${esc(D.meta.patch)}</b><span>${esc(D.meta.revisionShort)} 수정 반영</span></div></div></section><div class="job-content">${orderedSections(j).map(s=>`<section class="skill-section" id="${s.id}"><div class="skills-heading"><h2>${esc(sectionLabel(s,j))}</h2><span>${s.skills.length}개 항목</span></div>${s.skills.map(k=>skillPanel(j,k)).join('')}</section>`).join('')}</div><nav class="page-end" aria-label="페이지 이동"><a href="#">← 전체 직업</a><a href="${href(j.id)}" data-page-top>맨 위로 ↑</a></nav>`;
+  main.innerHTML=`<section class="job-intro"><a class="back" href="${j.group==='common'?'#':'#group/'+j.group}">← ${j.group==='common'?'전체 직업':groupName(j.group)}</a><div class="job-title">${j.portrait?`<img src="${j.portrait}" alt="" width="76" height="76">`:''}<div><p class="eyebrow">${esc(groupName(j.group))}</p><h1>${esc(j.name)}</h1><p class="detail-meta">${j.count}개 변경 항목 · ${esc(D.meta.shortDate)} 테스트월드</p></div><div class="detail-version"><b>${esc(D.meta.patch)}</b></div></div></section><div class="job-content">${orderedSections(j).map(s=>`<section class="skill-section" id="${s.id}"><div class="skills-heading"><h2>${esc(sectionLabel(s,j))}</h2><span>${s.skills.length}개 항목</span></div>${s.skills.map(k=>skillPanel(j,k)).join('')}</section>`).join('')}</div><nav class="page-end" aria-label="페이지 이동"><a href="#">← 전체 직업</a><a href="${href(j.id)}" data-page-top>맨 위로 ↑</a></nav>`;
   document.title=`${j.name} 전체 스킬 변경 전후 | ${D.meta.title}`;
   scrollToAnchor(j,anchor);
 }
@@ -89,6 +88,6 @@ dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoun
 window.addEventListener('hashchange',route);
 if(D){
   document.querySelector('.patch-label b').textContent=D.meta.patch;
-  document.querySelector('.footer').innerHTML=`<p>메이플스토리 비공식 패치 정리 · ${esc(D.meta.notice)}</p><p><a href="${esc(D.meta.official)}" target="_blank" rel="noopener">공식 테스트월드 공지 ↗</a><span>·</span><a href="${esc(D.meta.reference)}" target="_blank" rel="noopener">참고 자료·툴팁 출처 ↗</a></p><p>${esc(D.meta.revised)} 공지 수정분 반영 · 게임 및 툴팁 이미지의 권리는 NEXON에 있습니다.</p>`;
+  document.querySelector('.footer').innerHTML=`<p>메이플스토리 비공식 패치 정리 · ${esc(D.meta.notice)}</p><p><a href="${esc(D.meta.official)}" target="_blank" rel="noopener">공식 테스트월드 공지 ↗</a></p><p>게임 및 툴팁 이미지의 권리는 NEXON에 있습니다.</p>`;
   route();
 }else main.innerHTML='<div class="empty"><h1>패치 자료를 불러오지 못했습니다.</h1><p>페이지를 새로고침해 주세요.</p></div>';
